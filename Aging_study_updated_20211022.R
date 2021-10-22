@@ -53,6 +53,8 @@ summary(DATA$Hz)
 # Figure 2A ----
 ggplot(data = DATA, 
        mapping = aes(x = log(Hz), y = log(Frontal))) +
+  annotate("rect", xmin = log(8), xmax = log(12), ymin = -Inf, ymax = Inf,
+           alpha = .2) +
   geom_line(aes(col=subID, lty=Labels), lwd=0.5)+
   stat_summary(aes(lty=Labels), fun="mean", geom="line", lwd=1.5)+
   facet_grid(~Labels)+
@@ -92,6 +94,8 @@ DAT1$group<-factor(DAT1$group)
 summary(DAT1$group)
 
 summary(DAT1$R2)
+summary(DAT1[DAT1$group=="OA",]$R2)
+summary(DAT1[DAT1$group=="YA",]$R2)
 
 
 
