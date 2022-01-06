@@ -1,6 +1,6 @@
 # spectral_slopes_aging
 This repository contains data and scripts for:  
-Pathania, A., Euler, M.J., Clark. M., Cowan, R., Duff, K., & Lohse, K.R. (under revision). Relating resting EEG power spectra to age-related changes in cognitive performance: An observational pilot study. Biological Psychology.
+Pathania, A., Euler, M.J., Clark. M., Cowan, R., Duff, K., & Lohse, K.R. (in press). Resting EEG spectral slopes are associated with age-related differences in information processing speed. Biological Psychology.
 
 1. Aging_study_updated_20211022: R code consistent with resubmission to Biological Psychology. Primary changes from the pre-print are: (1) using spectral parameterization rather than regression based methods to extract the spectral slope and (2) analyzing 5 RBANS domains rather than all 12 subtets.
 2. MASTER_EO_and_EC_EEG_KRL: Raw power spectra that are used for several plots and reduced into MASTER_FOOOF.
