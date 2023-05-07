@@ -1,3 +1,5 @@
+<a href="https://zenodo.org/badge/latestdoi/330802321"><img src="https://zenodo.org/badge/330802321.svg" alt="DOI"></a>
+
 # spectral_slopes_aging
 This repository contains data and scripts for:  
 Pathania, A., Euler, M.J., Clark. M., Cowan, R., Duff, K., & Lohse, K.R. (in press). Resting EEG spectral slopes are associated with age-related differences in information processing speed. Biological Psychology.
