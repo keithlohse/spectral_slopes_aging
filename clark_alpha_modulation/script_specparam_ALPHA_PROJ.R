@@ -58,6 +58,7 @@ fm <- fooof$FOOOF(
 summary(SPECTRA$subID)
 summary(SPECTRA$condition)
 
+# OA04 ----
 OA04_EC <- SPECTRA %>% filter(subID == "oa04" && condition =="Eyes Closed")
 head(OA04_EC)
 OA04_EO <- SPECTRA %>% filter(subID == "oa04" && condition =="Eyes Open")
@@ -68,6 +69,10 @@ fm$fit(freqs = np$ravel(OA04_EC$Hz),
        freq_range = c(1.5, 30.5))
 
 results <- fm$get_results()
+results
+
+fm$plot()
+plt$show()
 
 OA04_EC_results <- tibble::tibble(
   a_params = list(results$aperiodic_params),
@@ -88,31 +93,40 @@ fm$report()
 OA04_EC_results$a_params
 OA04_EC_results$p_params
 
-OA04_EO_results$a_params
-OA04_EO_results$p_params
 
-# Example Participant Plot ----
-head(SPECTRA)
 
-Hz <- c(rep(seq(2, 30, 1), 2))
-condition <- c(rep("Eyes Closed", 29), rep("Eyes Open", 29))
+# OA05 ----
+OA05_EC <- SPECTRA %>% filter(subID == "oa05" && condition =="Eyes Closed")
+head(OA05_EC)
+OA05_EO <- SPECTRA %>% filter(subID == "oa05" && condition =="Eyes Open")
+head(OA05_EO)
 
-ggplot(data=SPECTRA[SPECTRA$subID=="oa04",], aes(x=Hz, y=log_Occipital)) +
-  geom_rect(aes(xmin=8, xmax=12, ymin=-Inf, ymax=Inf), fill="grey90")+
-  geom_line(aes(group=subID), col="black", lwd=0.5) +
-  facet_wrap(~condition) +
-  scale_x_continuous(name = "Frequency (Hz)") +
-  scale_y_continuous(name = "Power log_10(uV^2)") +
-  #scale_color_manual(values=c("black", "red"))+
-  theme_bw()+
-  theme(axis.text=element_text(size=10, color="black"), 
-        legend.text=element_text(size=12, color="black"),
-        legend.title=element_text(size=12, face="bold"),
-        axis.title=element_text(size=12, face="bold"),
-        plot.title=element_text(size=12, face="bold", hjust=0.5),
-        panel.grid.minor = element_blank(),
-        strip.text = element_text(size=12, face="bold"),
-        legend.position = "bottom")
+fm$fit(freqs = np$ravel(OA05_EC$Hz), 
+       power_spectrum = np$ravel(OA05_EC$Occipital), 
+       freq_range = c(1.5, 30.5))
+
+results <- fm$get_results()
+results
+
+fm$plot()
+plt$show()
+
+OA05_EC_results <- tibble::tibble(
+  a_params = list(results$aperiodic_params),
+  p_params = list(results$peak_params),
+  g_params = list(results$gaussian_params),
+  r_squared = results$r_squared,
+  error = results$error,
+  setting_am = fm$aperiodic_mode,
+  setting_mnp = fm$max_n_peaks,
+  setting_mph = fm$min_peak_height,
+  setting_pt = fm$peak_threshold,
+  setting_pwl = list(fm$peak_width_limits)
+)
+
+fm$report()
+
+
 
 
 

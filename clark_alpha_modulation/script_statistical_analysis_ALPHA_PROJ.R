@@ -66,11 +66,11 @@ SPECTRA <- SPECTRA %>% filter(subID %in% sub_list)%>%
 unique(DATA$subID) 
 unique(SPECTRA$subID)
 
-# Filter the power spectra to 2-30 Hz and just O1, Oz, and O2
+# Filter the power spectra to 1.5-30.5 Hz and just O1, Oz, and O2
 head(SPECTRA)
 SPECTRA <- SPECTRA %>% select(subID, group, condition,  band, Hz, O1, Oz, O2) %>%
-  filter(Hz>=2) %>% # Truncate the low end
-  filter(Hz<=30) %>% #truncate the high end
+  filter(Hz>=1.5) %>% # Truncate the low end
+  filter(Hz<=30.5) %>% #truncate the high end
   rowwise() %>% 
   mutate(Occipital=mean(c(O1, Oz, O2), na.rm=TRUE),
          log_Occipital=log(Occipital, base=10))
@@ -147,14 +147,16 @@ ggsave(
   dpi = 300
 )
 
+
 # Example Participant Plot ----
 head(SPECTRA)
 head(DATA)
 DATA %>% filter(subID=="oa04") %>%
-  select(condition, offset, exponent, cf_1, pw_1, bw_1)
+  select(condition, offset, exponent, cf_1, pw_1, bw_1,
+         cf_2, pw_2, bw_2, cf_3, pw_3, bw_3)
 
-Hz <- c(rep(seq(2, 30, 1), 2))
-condition <- c(rep("Eyes Closed", 29), rep("Eyes Open", 29))
+Hz <- c(rep(seq(1.5, 30.5, 1), 2))
+condition <- c(rep("Eyes Closed", 30), rep("Eyes Open", 30))
 
 TEST <- tibble(Hz, condition)
 TEST <- merge(x=TEST,
@@ -164,53 +166,57 @@ TEST <- merge(x=TEST,
                        cf_2, pw_2, bw_2),
               by="condition")
 TEST
-TEST$Occipital_aperiodic <- with(TEST, offset-exponent*log(Hz, base=10))
-TEST$Occipital_gauss1 <- with(TEST, pw_1*(dnorm(x=Hz, mean=cf_1, sqrt(bw_1))/max(dnorm(x=Hz, mean=cf_1, sqrt(bw_1)))))
-TEST$Occipital_gauss2 <- with(TEST, pw_2*(dnorm(x=Hz, mean=cf_2, sqrt(bw_2))/max(dnorm(x=Hz, mean=cf_2, sqrt(bw_2)))))
-
-TEST$Occipital_total1 <- with(TEST, Occipital_aperiodic+Occipital_gauss1)
-TEST$Occipital_total2 <- with(TEST, Occipital_aperiodic+Occipital_gauss2)
-
-ggplot(data=SPECTRA[SPECTRA$subID=="oa04",], aes(x=Hz, y=log_Occipital+0.2)) +
-  geom_rect(aes(xmin=7.5, xmax=12.5, ymin=-Inf, ymax=Inf), fill="grey90")+
-  geom_line(aes(group=subID), col="black", lwd=0.5) +
-  geom_vline(data=DATA %>% filter(subID=="oa04") %>%
-               select(condition, cf_1),
-             aes(xintercept=cf_1), 
-             col="#D55E00")+
-  geom_vline(data=DATA %>% filter(subID=="oa04") %>%
-               select(condition, cf_2),
-             aes(xintercept=cf_2), 
-             col="#D55E00")+
-  geom_line(data=TEST, aes(x=Hz, y=Occipital_aperiodic), 
-            col="#56B4E9", lwd=1, lty=2) +
-  geom_line(data=TEST, aes(x=Hz, y=Occipital_total1), 
-            col="#009E73", lwd=0.75, lty=2) +
-  geom_line(data=TEST, aes(x=Hz, y=Occipital_total2), 
-            col="#009E73", lwd=0.75, lty=2) +
-  facet_wrap(~condition) +
-  scale_x_continuous(name = "Frequency (Hz)") +
-  scale_y_continuous(name = "Power log_10(uV^2)") +
-  #scale_color_manual(values=c("black", "red"))+
-  theme_bw()+
-  theme(axis.text=element_text(size=10, color="black"), 
-        legend.text=element_text(size=12, color="black"),
-        legend.title=element_text(size=12, face="bold"),
-        axis.title=element_text(size=12, face="bold"),
-        plot.title=element_text(size=12, face="bold", hjust=0.5),
-        panel.grid.minor = element_blank(),
-        strip.text = element_text(size=12, face="bold"),
-        legend.position = "bottom")
-
-
-ggsave(
-  filename="./OA04_spectra.jpeg",
-  plot = last_plot(),
-  width = 6,
-  height = 3,
-  units = "in",
-  dpi = 300
-)
+# # from: https://fooof-tools.github.io/fooof/auto_tutorials/plot_01-ModelDescription.html#sphx-glr-auto-tutorials-plot-01-modeldescription-py
+# # Cannot recreate curves that match matplotlib output from python.
+# # We will stick with inserting Python generated figures.
+# TEST$Occipital_aperiodic <- with(TEST, offset-log(Hz^exponent, base=10))
+# TEST$Occipital_gauss1 <- with(TEST, pw_1*exp((-(Hz-cf_1)^2)/(2*(bw_1)^2)))
+# TEST$Occipital_gauss2 <- with(TEST, pw_2*exp((-(Hz-cf_2)^2)/(2*(bw_2)^2)))
+# 
+# TEST$Occipital_total1 <- with(TEST, Occipital_aperiodic+Occipital_gauss1)
+# TEST$Occipital_total2 <- with(TEST, Occipital_aperiodic+Occipital_gauss2)
+# TEST$Occipital_total <- with(TEST, Occipital_aperiodic+Occipital_gauss1+Occipital_gauss2)
+# TEST
+# 
+# head(SPECTRA)
+# ggplot(data=SPECTRA[SPECTRA$subID=="oa04",], aes(x=Hz, y=log_Occipital)) +
+#   geom_rect(aes(xmin=7.5, xmax=12.5, ymin=-Inf, ymax=Inf), fill="grey90")+
+#   geom_line(aes(group=subID), col="black", lwd=0.5) +
+#   geom_vline(data=TEST %>% select(condition, cf_1),
+#              aes(xintercept=cf_1), 
+#              col="#D55E00")+
+#   geom_vline(data=TEST %>% select(condition, cf_2),
+#              aes(xintercept=cf_2), 
+#              col="#D55E00")+
+#   geom_line(data=TEST, aes(x=Hz, y=Occipital_aperiodic), 
+#              col="#56B4E9", lwd=1, lty=2) +
+#   geom_line(data=TEST, aes(x=Hz, y=Occipital_total1), 
+#              col="#009E73", lwd=0.75, lty=2) +
+#   geom_line(data=TEST, aes(x=Hz, y=Occipital_total2), 
+#               col="#009E73", lwd=0.75, lty=2) +
+#   facet_wrap(~condition) +
+#   scale_x_continuous(name = "Frequency (Hz)") +
+#   scale_y_continuous(name = "Power log_10(uV^2)", limits = c(-1, 1.5)) +
+#   #scale_color_manual(values=c("black", "red"))+
+#   theme_bw()+
+#   theme(axis.text=element_text(size=10, color="black"), 
+#         legend.text=element_text(size=12, color="black"),
+#         legend.title=element_text(size=12, face="bold"),
+#         axis.title=element_text(size=12, face="bold"),
+#         plot.title=element_text(size=12, face="bold", hjust=0.5),
+#         panel.grid.minor = element_blank(),
+#         strip.text = element_text(size=12, face="bold"),
+#         legend.position = "bottom")
+# 
+# 
+# ggsave(
+#   filename="./OA04_spectra.jpeg",
+#   plot = last_plot(),
+#   width = 6,
+#   height = 3,
+#   units = "in",
+#   dpi = 300
+# )
 
 
 # Calculating Average Alpha Power Outside of FOOOF ----
@@ -309,7 +315,7 @@ exp1<-ggplot(data=DATA, aes(x=condition, y=exponent))+
   geom_line(aes(group=subID, lty=Ag), alpha=0.2) +
   geom_point(aes(group=subID), shape=16, size=2, alpha=0.2)+
   geom_line(data=AVE_DATA, aes(x=condition, y=mean_exp, lty=age, group=1), lwd=1) +
-  geom_point(data=AVE_DATA, aes(x=condition, y=mean_exp, lty=age, group=1),
+  geom_point(data=AVE_DATA, aes(x=condition, y=mean_exp, group=1),
              shape="-", size=20)+
   facet_wrap(~Ag)+
   scale_x_discrete(name="Condition") +
