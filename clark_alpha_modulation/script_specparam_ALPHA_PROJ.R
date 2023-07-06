@@ -4,7 +4,8 @@ library(patchwork); library(ggpubr);library(reshape2);
 library(emmeans); library(ez); library(reticulate) 
 
 #Set working directory 
-setwd("C:/Users/kelop/Box/Trainees/Mindie Clark/Comps")
+# E.g.,:
+setwd("~/GitHub/spectral_slopes_aging/clark_alpha_modulation/")
 
 
 # 1.0 Visualizing the Data ----

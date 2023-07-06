@@ -4,8 +4,8 @@ library(patchwork); library(ggpubr);library(reshape2);
 library(emmeans); library(ez); 
 
 #Set working directory 
-setwd("C:/Users/kelop/Box/Trainees/Mindie Clark/Comps")
-#("C:/Users/mincl/Box/Comps/Manuscript/Data/Analysis_Jan2023")
+# E.g., 
+setwd("~/GitHub/spectral_slopes_aging/clark_alpha_modulation/")
 
 # let's see what is in the data folder
 list.files()
